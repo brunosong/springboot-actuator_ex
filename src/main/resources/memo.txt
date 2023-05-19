@@ -20,3 +20,4 @@ endpoint 를 활성화 하려명 2가지 방법이 필요하다.
 java , os , env , build , git 등
 git 어떤 브랜치에 어떤 커밋이 되어있는지도 확인이 가능하다. git.properties 가 필요하다.
 
+
