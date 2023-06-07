@@ -5,9 +5,27 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+
 @Slf4j
 @RestController
 public class LogController {
+
+    private final DataSource dataSource;
+
+    public LogController(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    @GetMapping("/connetionStart")
+    public String con() throws Exception{
+
+        Connection connection = dataSource.getConnection();
+        System.out.println(connection);
+
+        return "ok";
+    }
 
     @GetMapping("/log")
     public String log(){

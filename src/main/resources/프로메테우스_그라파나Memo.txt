@@ -1,0 +1,71 @@
+// 프로메테우스 , 그라파나
+
+메트릭을 그 순간만 확인할게 아니라 과거 데이터를 저장해야 할때가 있다.
+예를 들어서 한달치 시피유 사용량을 보고 싶다 하면 어딘가에 데이터를 저장해놔야 한다. 그래야지 아 조금 있으면 우리가 장비를 늘려야겠구나
+판단할수 있으니깐..
+
+그 메트릭을 담을수 있는 데이터베이스가 프로메테우스
+그 프로메테우스를 활용하여 화면에 보여줄수 있는것이 그라파나
+
+프로메테우스에서 스프링부트에 정보를 수집 해가기 위해선 micrometer 를 사용하면 된다.
+프로메테우스용 마이크로미터 라이브러리를 심어야 한다.
+
+implementation 'io.micrometer:micrometer-registry-prometheus:1.5.1'
+
+"prometheus": {
+      "href": "http://localhost:8080/actuator/prometheus",
+      "templated": false
+    },
+
+    이게 생겨남
+
+    여기를 보면 프로메테우스 포맷으로 바뀌어 정보가 제공 된다.
+
+ prometheus.yml 파일에 추가
+
+ - job_name: "spring-boot-actuator"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 1s
+    static_configs:
+      - targets: ["localhost:8080"]
+
+  localhost:8080 이 경로로 1초에 한번씩 호출한다. 운영에서는 10초에서 1분을 권장한다.
+
+  프로메테우스 -> Status -> Configuration 에 내가 설정한 정보가 들어가져있어야 한다.
+
+  프로메테우스 화면에서 http_server_requests_seconds_count 를 하고 익스큐트 해보면 값이 나온다
+  태그와 레이브은 같은 개념이다
+
+  http_server_requests_seconds_count{uri="/log"} 라고 치면 필터링 되어서 보여진다.
+  http_server_requests_seconds_count{uri != "/actuator/prometheus"} 이렇게 하면 제외되고 보여진다.
+  /actuator/prometheus 는 프로메테우스가 서버를 호출하는것이기 때문에 보여질 필요가 없다
+
+  http_server_requests_seconds_count{method =~ "GET|POST"  } ~ 뒤에는 정규식이 붙을수 있다
+  http_server_requests_seconds_count{method !~ "GET|POST"  } 이거를 제외된다.
+
+  sum(http_server_requests_seconds_count) 등 다양한 함수를 지원한다.
+
+  http_server_requests_seconds_count offset 5m 5분 전 자료를 뽑아온다.
+
+  http_server_requests_seconds_count[1m] 1분동안 데이터를 보여준다. ( 백터범위 선택기라고 한다 )
+
+
+
+  # 게이지와 카운트
+  게이지 : 임의로 변경이 되는 값. cpu , 커넥션 , 계기판 속도 ( 오르락 내리락 하는것)
+  카운트 : 단일하게 증가하는 단순 누적 값
+
+
+  카운트는 문제가 있는것이 계속 쌓여서 올라간다... 그래프로 특정시간에 얼마나 왔는지 확인이 어렵다
+  원하는건 쌓이는 값을 보는게 아니라 특정시간에 고객이 얼마나 왔는지 확인하는걸 하고 싶어 한다.
+
+  이런 문제를 해결하기 위해서 increase() 를 사용하면 특정시간에 얼마나 들어왔는지 확인이 가능하다.
+  increase(http_server_requests_seconds_count{uri="/log"}[1m])
+
+  rete() 도 같은 처리를 하지만 지표가 좀 다르다. 계산 공식이 다름
+
+  irate() 급격하게 증가된 내용을 보고 싶을때 사용한다.
+
+  프로메테우스는 간단한 인사이트를 얻을 때 사용하면 좋을것 같다. 프로메테우스 공식 사이트에서 docs 를 보면 잘 나와있다
+
+  그라파나 대쉬보드는 스프링 액츄에이터 용으로 만들어 둔 많은 대쉬보드가 있어서 가져다 쓰면 된다.

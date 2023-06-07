@@ -1,0 +1,22 @@
+// 메트릭 ( metrics )  http://localhost:8080/actuator/metrics
+
+톰캣 메트릭이 유용하다. 켜는걸 추천
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+
+이걸 넣어줘야 유용한 메트릭들이 나온다.
+tomcat.threads.busy 와 tomcat.threads.config.max 는 특히 유용
+
+tomcat.threads.busy 는 현재 바쁘게 운영되고 있는 쓰레드
+tomcat.threads.config.max 는 동시에 사용자를 받을수 있는 쓰레드에 양
+
+busy 가 점점 차서 max 양에 도달하면 장애가 발생할수 있다.
+
+수많은 메트릭이 찾아보면 많다
+사용자 정의 메트릭을 만들수도 있다. 사용자가 현재 주문수등 이런것들을 처리 할수 있다.
+
+메트릭을 잘 구축을 안해놨는데 서버가 내려가면 알수 없기 때문에 필요한 메트릭을 구현할수 있다.
+
+만약에 자바스크립트에서 문제가 생겼을때도 잘 정의해두면 활용할수 있다.

@@ -23,7 +23,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator' //actuator 추가
-    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'io.micrometer:micrometer-registry-prometheus' //프로메테우스 마이크로미터 추가 알아서 버전을 찾아준다.
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
