@@ -33,4 +33,10 @@ info:
 
 logging:
   level:
-    hello.contoller: debug
+    hello.controller: debug
+
+
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
